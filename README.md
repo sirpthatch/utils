@@ -1,2 +1,3 @@
 # utils
-Collection of utilities
+Collection of utility scripts and configuration files (e.g. bashrc, vimrc, etc.)
+

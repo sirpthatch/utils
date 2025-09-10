@@ -1,0 +1,4 @@
+export PS1="%F{magenta}%n%f %F{green}%T%f %F{blue}%3d%f ~ %# "
+
+# Set login message
+echo "\n\033[0;32;40mIn the reproof of chance lies the true proof of men\033[0m\n"
