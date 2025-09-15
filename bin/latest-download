@@ -1,0 +1,77 @@
+#!/bin/bash
+
+# Get the latest written file in specified directory (defaults to ~/Downloads)
+# Usage: latest-download [PATH] [-n|--name-only] [-h|--help]
+
+show_help() {
+    echo "Usage: latest-download [PATH] [OPTIONS]"
+    echo ""
+    echo "Get the latest written file in specified directory (defaults to ~/Downloads)"
+    echo ""
+    echo "Arguments:"
+    echo "  PATH               Directory to search (default: ~/Downloads)"
+    echo ""
+    echo "Options:"
+    echo "  -n, --name-only    Show filename only instead of full path"
+    echo "  -h, --help         Show this help message"
+    echo ""
+    echo "Examples:"
+    echo "  latest-download                 # Returns full path from ~/Downloads"
+    echo "  latest-download /tmp            # Returns full path from /tmp"
+    echo "  latest-download -n              # Returns just the filename from ~/Downloads"
+    echo "  latest-download /tmp -n         # Returns just the filename from /tmp"
+    echo "  cp \"\$(latest-download)\" .        # Copy latest download to current dir"
+}
+
+# Default values
+DOWNLOADS_DIR="$HOME/Downloads"
+NAME_ONLY=false
+
+# Parse command line arguments
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -n|--name-only)
+            NAME_ONLY=true
+            shift
+            ;;
+        -h|--help)
+            show_help
+            exit 0
+            ;;
+        -*)
+            echo "Unknown option: $1" >&2
+            show_help
+            exit 1
+            ;;
+        *)
+            # This is a path argument
+            DOWNLOADS_DIR="$1"
+            shift
+            ;;
+    esac
+done
+
+# Check if directory exists
+if [[ ! -d "$DOWNLOADS_DIR" ]]; then
+    echo "Error: Directory not found at $DOWNLOADS_DIR" >&2
+    exit 1
+fi
+
+# Get the latest file
+cd "$DOWNLOADS_DIR" || exit 1
+
+# Find the most recently modified file (excluding directories)
+latest_file=$(ls -1t | head -1)
+
+# Check if any files were found
+if [[ -z "$latest_file" ]]; then
+    echo "Error: No files found in $DOWNLOADS_DIR" >&2
+    exit 1
+fi
+
+# Output based on user preference (full path by default)
+if [[ "$NAME_ONLY" == "true" ]]; then
+    echo "$latest_file"
+else
+    echo "$DOWNLOADS_DIR/$latest_file"
+fi
