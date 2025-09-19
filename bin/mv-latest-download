@@ -1,0 +1,45 @@
+show_help() {
+    echo "Usage: mv-latest-download [PATH]"
+    echo ""
+    echo " Move thes latest downloaded file to the specified path and cleans the fiename"
+    echo ""
+    echo "Arguments:"
+    echo "  PATH               Directory to move the file to"
+    echo ""
+    echo "Options:"
+    echo "  -h, --help         Show this help message"
+    echo ""
+    echo "Examples:"
+    echo "  mv-latest-download ~/Documents/ # copies the latest download into ~/Documents"
+}
+
+# Parse command line arguments
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -h|--help)
+            show_help
+            exit 0
+            ;;
+        -*)
+            echo "Unknown option: $1" >&2
+            show_help
+            exit 1
+            ;;
+        *)
+            # This is a path argument
+            DESTINATION_DIR="$1"
+            shift
+            ;;
+    esac
+done
+
+# Check if directory exists
+if [[ ! -d "$DESTINATION_DIR" ]]; then
+    echo "Error: Directory not found at $DESTINATION_DIR" >&2
+    exit 1
+fi
+
+mv "$(latest-file)" $DESTINATION_DIR
+clean "$(latest-file $DESTINATION_DIR)"
+
+echo "Moved/Cleaned $(latest-file $DESTINATION_DIR)"
